@@ -168,15 +168,16 @@ import datetime
 
 TOKEN_TTL = datetime.timedelta(days=7)
 
-REST_AUTH_TOKEN_MODEL = "teathyme.models.CustomToken"
-REST_AUTH_TOKEN_CREATOR = "teathyme.utils.custom_create_token"
-REST_AUTH_SERIALIZERS = {"USER_SERIALIZER":"teathyme.serializers.UserSerializer"}
+# REST_AUTH_TOKEN_MODEL = "teathyme.models.CustomObtainAuthToken"
+REST_AUTH_SERIALIZERS = {
+    "USER_SERIALIZER": "teathyme.serializers.UserSerializer",
+}
 
 # Rest Framework config
 REST_FRAMEWORK = {
-    'DATETIME_FORMAT': "%d/%m/%Y %I: %M%P",
+    'DATETIME_FORMAT': "%d/%m/%Y %I:%M%P",
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        "teathyme.authentication.ExpiringTokenAuthentication",
-        "rest_framework.authentication.SessionAuthentication",
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
     ],
 }

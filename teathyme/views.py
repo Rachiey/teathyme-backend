@@ -1,9 +1,16 @@
+import logging
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import viewsets
+from rest_framework.authtoken.views import ObtainAuthToken  # Import the ObtainAuthToken view
+from rest_framework import permissions
+from django.contrib.auth import authenticate, login
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.exceptions import AuthenticationFailed
+
 
 from .serializers import IngredientsSerializer
 from .models import Ingredients
@@ -11,21 +18,15 @@ from .serializers import LoginSerializer
 from .serializers import RegisterSerializer
 
 from rest_framework import generics
-from rest_framework.authtoken.models import Token
-from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from django.contrib.auth import logout
-from django.contrib.auth import authenticate, login
-from rest_framework.decorators import api_view
-from rest_framework import permissions
-from rest_framework import views
 
 from .models import User
 from .permissions import IsUserOrAdminOrReadOnly
-from .utils import custom_create_token
 
 
+logger = logging.getLogger('my_logger') 
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -35,27 +36,6 @@ class RegisterView(generics.CreateAPIView):
 class IngredientsView(viewsets.ModelViewSet):
     serializer_class = IngredientsSerializer
     queryset = Ingredients.objects.all()
-
-class LoginView(views.APIView):
-    permission_classes = (permissions.AllowAny,)
-
-    def post(self, request, format=None):
-        serializer = LoginSerializer(data=self.request.data, context={'request': self.request})
-        serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
-        login(request, user)
-
-        # Create a token for the authenticated user
-        token = custom_create_token(self, Token, user)
-
-        # You can include the token in your response
-        response_data = {
-            'token': token.key,
-            'user_id': user.id
-        }
-
-        return Response(response_data, status=status.HTTP_202_ACCEPTED)
-
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -99,34 +79,25 @@ class UserDetail(APIView):
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def user_logout(request):
-    token, _ = Token.objects.get_or_create(user=request.user)
-    token.delete()
+    # Delete the default token when logging out
+    request.auth.delete()
     logout(request)
     return Response({'detail': 'Successfully logged out.'}, status=status.HTTP_200_OK)
 
+class LoginView(ObtainAuthToken):
+    permission_classes = (permissions.AllowAny,)
 
+    def post(self, request, format=None):
+        # Log the request data
+        logger.info(f"Request data: {request.data}")
 
-# @api_view(['POST'])
-# def custom_login(request):
-#     username = request.data.get('username')
-#     password = request.data.get('password')
-
-#     user = authenticate(request, username=username, password=password)
-
-#     if user is not None:
-#         login(request, user)
-#         token, created = Token.objects.get_or_create(user=user)
-
-#         # Check for an existing token or create a new one
-#         try:
-#             token = Token.objects.get(user=user)
-#         except Token.DoesNotExist:
-#             token = Token.objects.create(user=user)
-
-#         return Response({'token': token.key})
-#     else:
-#         return Response({'detail': 'Invalid username or password'}, status=status.HTTP_401_UNAUTHORIZED)
+        try:
+            # The ObtainAuthToken view handles token creation and login.
+            # You don't need to implement this logic here anymore.
+            return super(LoginView, self).post(request, format)
+        except AuthenticationFailed as e:
+            logger.error(f"Authentication failed: {e}")
+            return Response({'detail': 'Authentication failed'}, status=status.HTTP_401_UNAUTHORIZED)

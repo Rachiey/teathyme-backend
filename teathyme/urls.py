@@ -4,6 +4,7 @@ from . import views
 from django.contrib.auth.views import LogoutView
 from .views import *
 from teathyme import views
+from .views import ObtainAuthToken
 
 
 urlpatterns = [
@@ -11,6 +12,6 @@ urlpatterns = [
     path('<str:username>/', views.UserDetail.as_view(), name="individual-user"),
     path('auth/register/', include('rest_auth.registration.urls')),
     path('auth/', include('rest_auth.urls')),
-    path('login/', views.LoginView.as_view(), name='login'),
+     path('teathyme/auth/login/', ObtainAuthToken.as_view(), name='login'),
     path('api-auth/logout/', LogoutView.as_view(), name='api_logout'),
 ]

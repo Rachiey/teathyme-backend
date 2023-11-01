@@ -2,7 +2,10 @@ from datetime import date, timedelta
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
-from rest_framework.authtoken.models import Token
+# from rest_framework.authtoken.models import Token
+# from rest_framework.response import Response
+# from rest_framework.authtoken.views import ObtainAuthToken
+
 
 class User(AbstractUser):
     user_preferences = models.TextField(null=True, blank=True)
@@ -11,14 +14,13 @@ class User(AbstractUser):
         return self.username
 
 
-class CustomToken(Token):
-    customkey = models.CharField("Key", max_length=40, db_index=True)
-    customuser = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        related_name="custom_tokens",
-        on_delete=models.CASCADE,
-        verbose_name="User",
-    )
+# class CustomObtainAuthToken(ObtainAuthToken):
+#     def post(self, request, *args, **kwargs):
+#         serializer = self.serializer_class(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         user = serializer.validated_data['user']
+#         token, created = Token.objects.get_or_create(user=user)
+#         return Response({'token': token.key})
 
 class Ingredients(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

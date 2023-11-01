@@ -13,23 +13,6 @@ class IngredientsSerializer(serializers.ModelSerializer):
         model = Ingredients
         fields = ('id', 'text', 'quantity', 'expiry_date')
 
-
-
-# class UserSerializer(ModelSerializer):
-#     class Meta:
-#       model = User
-#       fields = ['username', 'password']
-#       extra_kwargs = {'password': {'write_only': True}}
-
-#     def create(self, validated_data):
-#         user = User(
-#             # email=validated_data['email'],
-#             username=validated_data['username']
-#         )
-#         user.set_password(validated_data['password'])
-#         user.save()
-#         return user
-
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField(
         label="Username",
@@ -49,18 +32,13 @@ class LoginSerializer(serializers.Serializer):
         if username and password:
             user = authenticate(request=self.context.get('request'), username=username, password=password)
             if not user:
-                # Handle authentication error (invalid credentials)
                 raise AuthenticationFailed("Access denied: wrong username or password")
 
-            # Valid user, add it to validated_data
             attrs['user'] = user
         else:
-            # Handle missing fields error
             raise serializers.ValidationError("Both 'username' and 'password' are required.")
 
         return attrs
-    
-    
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
@@ -70,19 +48,11 @@ class RegisterSerializer(serializers.ModelSerializer):
         model = User
         fields = ('username', 'password', 'password2',)
     
-    def validate_username(self, value):
-        if User.objects.filter(username=value).exists():
-            # Handle duplicate username error
-            raise serializers.ValidationError("This username is already in use.")
-
-        return value
-
     def validate(self, data):
         password1 = data.get('password')
         password2 = data.get('password2')
 
         if password1 != password2:
-            # Handle password mismatch error
             raise serializers.ValidationError("Passwords do not match.")
 
         return data
