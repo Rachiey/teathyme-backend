@@ -1,7 +1,7 @@
 import logging
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import viewsets
@@ -24,6 +24,17 @@ from django.contrib.auth import logout
 
 from .models import User
 from .permissions import IsUserOrAdminOrReadOnly
+from rest_framework import generics
+
+class UserIngredientsView(generics.ListAPIView):
+    serializer_class = IngredientsSerializer  # Use your serializer
+    
+    def get_queryset(self):
+        # Retrieve the username from the URL
+        username = self.kwargs['username']
+        
+        # Filter ingredients for the specified user
+        return Ingredients.objects.filter(user__username=username)
 
 
 logger = logging.getLogger('my_logger') 
@@ -36,6 +47,33 @@ class RegisterView(generics.CreateAPIView):
 class IngredientsView(viewsets.ModelViewSet):
     serializer_class = IngredientsSerializer
     queryset = Ingredients.objects.all()
+
+    # Remove the existing create and update actions, we'll override the default methods
+
+    @permission_classes([IsAuthenticated])
+    def create(self, request, *args, **kwargs):
+        # Get the serializer with user data and create the ingredient
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        # Associate the ingredient with the currently logged-in user
+        serializer.save(user=request.user)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    @permission_classes([IsAuthenticated])
+    def update(self, request, *args, **kwargs):
+        # Use the provided 'pk' in the URL to retrieve the instance
+        instance = self.get_object()
+        # Check if the user is the owner of the ingredient
+        if request.user == instance.user:
+            serializer = self.get_serializer(instance, data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            # If the user is not the owner, return a 403 Forbidden response
+            return Response({'detail': 'You do not have permission to perform this action.'}, status=status.HTTP_403_FORBIDDEN)
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

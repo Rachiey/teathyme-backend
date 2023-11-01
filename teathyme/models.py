@@ -21,11 +21,10 @@ class User(AbstractUser):
 #         user = serializer.validated_data['user']
 #         token, created = Token.objects.get_or_create(user=user)
 #         return Response({'token': token.key})
-
 class Ingredients(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.CharField(max_length=255)
-    quantity = models.PositiveIntegerField()
+    quantity = models.IntegerField()
     expiry_date = models.DateField()
     
     EXPIRATION_STATUS_EXPIRED = "expired"

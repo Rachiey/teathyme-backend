@@ -32,4 +32,7 @@ urlpatterns = [
     path('<str:username>/', views.UserDetail.as_view(), name="individual-user"),
     path('/auth/', include('rest_auth.urls')),
     path('rest-auth/', include('rest_auth.urls')),
+    path('api/Ingredientss/', include(router.urls)),
+    path('api/Ingredientss/<str:username>/', views.UserIngredientsView.as_view(), name='user-ingredients'),
+  
 ]
