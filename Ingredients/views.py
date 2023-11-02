@@ -25,7 +25,7 @@ from rest_framework import generics
 
 class UserIngredientsView(generics.ListCreateAPIView):
     serializer_class = IngredientsSerializer
-    
+
     def get_queryset(self):
         # Retrieve the username from the URL
         username = self.kwargs['username']
@@ -38,7 +38,7 @@ class UserIngredientsView(generics.ListCreateAPIView):
         username = self.kwargs['username']
         user = self.request.user  # You can use request.user to get the authenticated user
         serializer.save(user=user)
-
+    
     # Optional: Handle other HTTP methods like PUT, PATCH, DELETE
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)

@@ -1,11 +1,11 @@
 from datetime import date, timedelta
 from django.db import models
 
-from Users.models import User
+from django.contrib.auth.models import User
 
 
 class Ingredients(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='ingredients')
     text = models.CharField(max_length=255)
     quantity = models.IntegerField()
     expiry_date = models.DateField()

@@ -6,7 +6,7 @@ router = routers.DefaultRouter()
 router.register(r'ingredients', views.IngredientsView, 'ingredients')
 
 urlpatterns = [
-    path('/', include(router.urls)),
+    path('', include(router.urls)),
     path('api/ingredients/<str:username>/', views.UserIngredientsView.as_view(), name='user-ingredients'),
 
 ]

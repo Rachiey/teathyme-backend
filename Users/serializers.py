@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
-from .models import User
+from django.contrib.auth.models import User
 from Ingredients.models import Ingredients
 from Ingredients.serializers import IngredientsSerializer
 
