@@ -15,24 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework import routers
-from teathyme import views
-
-
-
-router = routers.DefaultRouter()
-router.register(r'Ingredientss', views.IngredientsView, 'Ingredients')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('teathyme/', include('teathyme.urls')),
-    path('api/', include(router.urls)),
-    path('api-auth/', include('rest_framework.urls')),
-    path('', views.index, name="user-index"),
-    path('<str:username>/', views.UserDetail.as_view(), name="individual-user"),
-    path('/auth/', include('rest_auth.urls')),
-    path('rest-auth/', include('rest_auth.urls')),
-    path('api/Ingredientss/', include(router.urls)),
-    path('api/Ingredientss/<str:username>/', views.UserIngredientsView.as_view(), name='user-ingredients'),
-  
+    path('users/', include('Users.urls')),
+    path('ingredients/', include('Ingredients.urls')),
 ]

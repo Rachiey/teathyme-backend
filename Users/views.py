@@ -12,10 +12,9 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.exceptions import AuthenticationFailed
 
 
-from .serializers import IngredientsSerializer
-from .models import Ingredients
 from .serializers import LoginSerializer
 from .serializers import RegisterSerializer
+from .serializers import UserSerializer
 
 from rest_framework import generics
 from rest_framework import status
@@ -26,66 +25,36 @@ from .models import User
 from .permissions import IsUserOrAdminOrReadOnly
 from rest_framework import generics
 
-class UserIngredientsView(generics.ListAPIView):
-    serializer_class = IngredientsSerializer  # Use your serializer
-    
-    def get_queryset(self):
-        # Retrieve the username from the URL
-        username = self.kwargs['username']
-        
-        # Filter ingredients for the specified user
-        return Ingredients.objects.filter(user__username=username)
 
 
 logger = logging.getLogger('my_logger') 
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def index(request):
+    # Get all users
+    users = User.objects.all()
+
+    # Use the modified UserSerializer
+    serialized = UserSerializer(users, many=True, context={'request': request})
+
+    # Construct the response data
+    response_data = []
+    for user_data in serialized.data:
+        response_data.append({
+            'username': user_data['username'],
+            'num_ingredients': user_data['num_ingredients'],
+            'ingredient_list': user_data['ingredient_list'],
+        })
+
+    return Response({"data": response_data})
+        
+
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     permission_classes = (AllowAny,)
     serializer_class = RegisterSerializer
-
-class IngredientsView(viewsets.ModelViewSet):
-    serializer_class = IngredientsSerializer
-    queryset = Ingredients.objects.all()
-
-    # Remove the existing create and update actions, we'll override the default methods
-
-    @permission_classes([IsAuthenticated])
-    def create(self, request, *args, **kwargs):
-        # Get the serializer with user data and create the ingredient
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        # Associate the ingredient with the currently logged-in user
-        serializer.save(user=request.user)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
-    @permission_classes([IsAuthenticated])
-    def update(self, request, *args, **kwargs):
-        # Use the provided 'pk' in the URL to retrieve the instance
-        instance = self.get_object()
-        # Check if the user is the owner of the ingredient
-        if request.user == instance.user:
-            serializer = self.get_serializer(instance, data=request.data)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(serializer.data)
-        else:
-            # If the user is not the owner, return a 403 Forbidden response
-            return Response({'detail': 'You do not have permission to perform this action.'}, status=status.HTTP_403_FORBIDDEN)
-
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def index(req):
-    data = User.objects.all()
-    serialized = LoginSerializer(data, many=True)
-    if req.user.is_superuser:
-        return Response({"data": serialized.data})
-    else:
-        resp_data = serialized.data
-        resp = [{"username": d["username"]} for d in resp_data]
-        return Response({"data": resp})
 
 class UserDetail(APIView):
     permission_classes = [IsUserOrAdminOrReadOnly]

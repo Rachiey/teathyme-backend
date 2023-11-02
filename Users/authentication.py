@@ -1,11 +1,11 @@
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.authtoken.models import Token
 from django.conf import settings
 from django.utils import timezone
 import pytz
 
 
-from .models import Token
 
 def get_auth_token(obj):
     token, created = Token.objects.get_or_create(user=obj)

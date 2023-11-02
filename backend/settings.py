@@ -32,7 +32,6 @@ ALLOWED_HOSTS = ['127.0.0.1',
 # Application definition
 
 INSTALLED_APPS = [
-    'teathyme',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -49,7 +48,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google', 
     'rest_auth.registration',
-    'users',
+    'Users.apps.UsersConfig',
+    'Ingredients.apps.IngredientsConfig',
 ]
 
 MIDDLEWARE = [
@@ -153,7 +153,7 @@ AUTHENTICATION_BACKENDS = (
     "allauth.account.auth_backends.AuthenticationBackend",
 )
 
-AUTH_USER_MODEL = "teathyme.User"
+# AUTH_USER_MODEL = 'teathyme.User'
 
 SITE_ID = 1
 ACCOUNT_EMAIL_REQUIRED = False
@@ -170,7 +170,7 @@ TOKEN_TTL = datetime.timedelta(days=7)
 
 # REST_AUTH_TOKEN_MODEL = "teathyme.models.CustomObtainAuthToken"
 REST_AUTH_SERIALIZERS = {
-    "USER_SERIALIZER": "teathyme.serializers.UserSerializer",
+    "USER_SERIALIZER": "Users.serializers.UserSerializer",
 }
 
 # Rest Framework config

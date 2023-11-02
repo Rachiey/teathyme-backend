@@ -1,17 +1,15 @@
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
-from .models import Ingredients
 from .models import User
+from Ingredients.models import Ingredients
+from Ingredients.serializers import IngredientsSerializer
+
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from rest_framework.exceptions import AuthenticationFailed
 
 
-class IngredientsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Ingredients
-        fields = ('id', 'text', 'quantity', 'expiry_date', 'user')
 
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField(
@@ -66,3 +64,21 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.save()
 
         return user
+    
+
+class UserSerializer(serializers.ModelSerializer):
+    num_ingredients = serializers.SerializerMethodField()
+    ingredient_list = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ['username', 'num_ingredients', 'ingredient_list']
+
+    def get_num_ingredients(self, user):
+        # Count the number of ingredients for the user
+        return user.ingredients.count()
+
+    def get_ingredient_list(self, user):
+        # Get a list of ingredient data for the user
+        ingredients = Ingredients.objects.filter(user=user)
+        return IngredientsSerializer(ingredients, many=True).data
