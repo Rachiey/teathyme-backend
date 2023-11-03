@@ -146,6 +146,26 @@ CORS_ORIGIN_WHITELIST = [
      'http://192.168.0.2:3000'
 ]
 
+
+# Allow the following HTTP methods
+CORS_ALLOW_METHODS = [
+    'DELETE',
+]
+
+# Allow the following headers
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+
+
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 AUTHENTICATION_BACKENDS = (
