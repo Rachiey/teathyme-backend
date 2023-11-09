@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'rest_auth.registration',
     'Users.apps.UsersConfig',
     'Ingredients.apps.IngredientsConfig',
+    'ShoppingList.apps.ShoppinglistConfig',
 ]
 
 MIDDLEWARE = [
@@ -140,6 +141,8 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ORIGIN_WHITELIST = [
      'http://localhost:3000',

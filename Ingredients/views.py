@@ -61,6 +61,25 @@ class IngredientDetailView(APIView):
         self.check_object_permissions(request, ingredient)
         ingredient.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    # @cross_origin(allow_headers=['Content-Type'])
+    def put(self, request, username, pk):
+        try:
+            ingredient = Ingredients.objects.get(pk=pk)
+        except Ingredients.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        serializer = IngredientsSerializer(ingredient, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data.id)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    # @app.after_request
+    # def set_cors_header(response):
+    #     response.headers['Access-Control-Allow-Origin'] = '*'
+    #     return response
+
 
 
 logger = logging.getLogger('my_logger') 
@@ -111,20 +130,3 @@ class IngredientsView(viewsets.ModelViewSet):
             resp = [{"username": d["username"]} for d in resp_data]
             return Response({"data": resp})
 
-
-# def delete_ingredient(request, username, item_id):
-#     try:
-#         # First, check if the ingredient exists and belongs to the specified user
-#         ingredient = get_object_or_404(Ingredients, id=item_id, user__username=username)
-
-#         # Check if the request method is DELETE
-#         if request.method == 'DELETE':
-#             # Delete the ingredient
-#             ingredient.delete()
-#             return JsonResponse({'message': 'Ingredient deleted successfully'})
-#         else:
-#             # If the request method is not DELETE, return a Bad Request response
-#             return JsonResponse({'message': 'Invalid request method'}, status=400)
-#     except Ingredients.DoesNotExist:
-#         # If the ingredient is not found, return a Not Found response
-#         return JsonResponse({'message': 'Ingredient not found'}, status=404)
