@@ -22,6 +22,7 @@ from rest_framework.permissions import AllowAny
 from django.contrib.auth import logout
 
 from django.contrib.auth.models import User
+from django.http import JsonResponse
 from .permissions import IsUserOrAdminOrReadOnly
 from rest_framework import generics
 
@@ -108,3 +109,4 @@ class LoginView(ObtainAuthToken):
         except AuthenticationFailed as e:
             logger.error(f"Authentication failed: {e}")
             return Response({'detail': 'Authentication failed'}, status=status.HTTP_401_UNAUTHORIZED)
+        

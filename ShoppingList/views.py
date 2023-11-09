@@ -11,6 +11,7 @@ from rest_framework import viewsets
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 
+
 class ShoppingListItemViewSet(viewsets.ModelViewSet):
     queryset = ShoppingListItem.objects.all()
     serializer_class = ShoppingListItemSerializer
@@ -38,26 +39,29 @@ class UserListView(generics.ListCreateAPIView):
     
 
 class UserListDetailView(APIView):
+    def get_user(self, username):
+        return get_object_or_404(User, username=username)
+
+    def get_shopping_list_item(self, user, pk):
+        return get_object_or_404(ShoppingListItem, user=user, pk=pk)
+
     def get(self, request, username, pk):
-        # Handle GET request, retrieve the ingredient
-        shoppinglist = get_object_or_404(ShoppingListItem, pk=pk)
+        user = self.get_user(username)
+        shoppinglist = self.get_shopping_list_item(user, pk)
         self.check_object_permissions(request, shoppinglist)
         serializer = ShoppingListItemSerializer(shoppinglist)
         return Response(serializer.data)
 
     def delete(self, request, username, pk):
-        # Handle DELETE request, delete the ingredient
-        shoppinglist = get_object_or_404(ShoppingListItem, pk=pk)
+        user = self.get_user(username)
+        shoppinglist = self.get_shopping_list_item(user, pk)
         self.check_object_permissions(request, shoppinglist)
         shoppinglist.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
-    # @cross_origin(allow_headers=['Content-Type'])
     def put(self, request, username, pk):
-        try:
-            shoppinglist = ShoppingListItem.objects.get(pk=pk)
-        except ShoppingListItem.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+        user = self.get_user(username)
+        shoppinglist = self.get_shopping_list_item(user, pk)
 
         serializer = ShoppingListItemSerializer(shoppinglist, data=request.data)
         if serializer.is_valid():
