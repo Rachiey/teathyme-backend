@@ -66,5 +66,6 @@ class UserListDetailView(APIView):
         serializer = ShoppingListItemSerializer(shoppinglist, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data.id)
+            # Return a response with the id of the updated item
+            return Response({'id': serializer.instance.id})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

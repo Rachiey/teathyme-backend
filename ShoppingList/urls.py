@@ -9,5 +9,5 @@ router.register(r'shopping-list', views.ShoppingListItemViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('<str:username>/', views.UserListView.as_view(), name='user-list'),
-    path('<str:username>/<int:pk>', views.UserListDetailView.as_view(), name='user-list-detail'),
+    path('<str:username>/<int:pk>/', views.UserListDetailView.as_view(), name='user-list-detail'),
 ]

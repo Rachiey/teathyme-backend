@@ -8,7 +8,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['username']
 
 class ShoppingListItemSerializer(serializers.ModelSerializer):
-    user = serializers.CharField(source='user.username')
+    user = serializers.CharField(source='user.username', read_only=True)
 
     class Meta:
         model = ShoppingListItem
