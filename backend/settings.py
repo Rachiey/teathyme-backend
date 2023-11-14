@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = '$6t-m21@xc&*ty6g55w9n(%8gssc^kg*y#$$%ispfqfm$tbo*3'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["*", '.fly.dev'] 
 
