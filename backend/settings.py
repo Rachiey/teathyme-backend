@@ -25,7 +25,9 @@ SECRET_KEY = '$6t-m21@xc&*ty6g55w9n(%8gssc^kg*y#$$%ispfqfm$tbo*3'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"] 
+ALLOWED_HOSTS = ["*", '.fly.dev'] 
+
+CSRF_TRUSTED_ORIGINS = ['https://*.fly.dev', 'https://thymesup.netlify.app']
 
 # Application definition
 
@@ -146,7 +148,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ORIGIN_WHITELIST = [
      'http://localhost:3000',
      'http://192.168.0.2:3000',
-     'https://thymesup.netlify.app/'
+     'https://thymesup.netlify.app'
 ]
 
 CORS_ALLOWED_ORIGINS = [
