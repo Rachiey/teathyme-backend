@@ -146,11 +146,13 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ORIGIN_WHITELIST = [
      'http://localhost:3000',
-     'http://192.168.0.2:3000'
+     'http://192.168.0.2:3000',
+     'https://thymesup.netlify.app/'
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # or the origin of your React app
+    "http://localhost:3000",
+    'https://thymesup.netlify.app'  # or the origin of your React app
 ]
 
 # Allow the following HTTP methods
