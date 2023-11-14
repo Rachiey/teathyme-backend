@@ -61,7 +61,9 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    # 'allauth.account.middleware.AccountMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # 'allauth.account.middleware.AuthenticationMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -69,7 +71,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'allauth.account.middleware.AccountMiddleware',
+
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -90,6 +92,7 @@ TEMPLATES = [
     },
 ]
 
+# for prod:
 WSGI_APPLICATION = 'backend.wsgi.application'
 
 
@@ -152,12 +155,12 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ORIGIN_WHITELIST = [
      'http://localhost:3000',
      'http://192.168.0.2:3000',
-     'https://thymesup.netlify.app'
+     'https://thymesup.netlify.app',
 ]
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    'https://thymesup.netlify.app'  # or the origin of your React app
+    'https://thymesup.netlify.app',  # or the origin of your React app
 ]
 
 # Allow the following HTTP methods
