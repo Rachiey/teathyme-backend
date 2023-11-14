@@ -3,3 +3,6 @@ services:
     type: web
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn tea-thyme-django.wsgi:application
+
+    runtime:
+  pythonVersion: 3.9
