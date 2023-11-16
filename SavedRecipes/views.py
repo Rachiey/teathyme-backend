@@ -48,3 +48,8 @@ class UserListView(generics.RetrieveDestroyAPIView):
             return SavedRecipe.objects.get(id=id)
         except SavedRecipe.DoesNotExist:
             raise NotFound()
+        
+    def perform_create(self, serializer):
+        username = self.kwargs['username']
+        user = User.objects.get(username=username)
+        serializer.save(user=user)
