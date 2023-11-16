@@ -26,22 +26,24 @@ class SavedRecipesView(APIView):
             serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
-class UserListView(generics.ListCreateAPIView):
+from rest_framework.exceptions import NotFound
+
+class UserListView(generics.RetrieveDestroyAPIView):
     serializer_class = SavedRecipeSerializer
 
     def get_queryset(self):
         username = self.kwargs['username']
         return SavedRecipe.objects.filter(user__username=username)
 
-    # def perform_create(self, serializer):
-    #     username = self.kwargs['username']
-    #     user = User.objects.get(username=username)
-    #     serializer.save(user=user)
-
     @permission_classes([IsAuthenticated])    
-    def delete(self, req, id):
-        savedrecipe = self.get_savedrecipe(id)
-        self.check_object_permissions(req, savedrecipe)
-        savedrecipe.delete()
-        return Response(status=204)
-    
+    def delete(self, request, id):
+        saved_recipe = self.get_object(id)
+        self.check_object_permissions(request, saved_recipe)
+        saved_recipe.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def get_object(self, id):
+        try:
+            return SavedRecipe.objects.get(id=id)
+        except SavedRecipe.DoesNotExist:
+            raise NotFound()
