@@ -14,17 +14,16 @@ from rest_framework import status
 
 class SavedRecipesView(APIView):
     def get(self, request):
-        # Get saved recipes for the current user (you'll need to implement the logic)
         saved_recipes = SavedRecipe.objects.filter(user=request.user)
         serializer = SavedRecipeSerializer(saved_recipes, many=True)
         return Response(serializer.data)
 
     def post(self, request):
-        # Save a recipe for the current user
         serializer = SavedRecipeSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
 from rest_framework.exceptions import NotFound
 
