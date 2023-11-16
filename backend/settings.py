@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'Users.apps.UsersConfig',
     'Ingredients.apps.IngredientsConfig',
     'ShoppingList.apps.ShoppinglistConfig',
+    'SavedRecipes.apps.SavedRecipesConfig',
     'dj_rest_auth',
 ]
 
