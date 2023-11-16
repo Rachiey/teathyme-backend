@@ -21,5 +21,5 @@ urlpatterns = [
     path('ingredients/', include('Ingredients.urls')),
     path('shopping-list/', include('ShoppingList.urls')),
     path('dj-rest-auth/', include('dj_rest_auth.urls')),
-    path('savedrecipes', include('SavedRecipes.urls')),
+    path('savedrecipes/', include('SavedRecipes.urls')),
 ]
