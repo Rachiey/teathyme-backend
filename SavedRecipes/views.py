@@ -33,10 +33,10 @@ class UserListView(generics.ListCreateAPIView):
         username = self.kwargs['username']
         return SavedRecipe.objects.filter(user__username=username)
 
-    def perform_create(self, serializer):
-        username = self.kwargs['username']
-        user = User.objects.get(username=username)
-        serializer.save(user=user)
+    # def perform_create(self, serializer):
+    #     username = self.kwargs['username']
+    #     user = User.objects.get(username=username)
+    #     serializer.save(user=user)
 
     @permission_classes([IsAuthenticated])    
     def delete(self, req, id):
