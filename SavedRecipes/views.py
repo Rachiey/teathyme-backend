@@ -41,8 +41,10 @@ class UserListView(generics.RetrieveDestroyAPIView):
         saved_recipe.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    def get_object(self, id):
+    def get_object(self):
         try:
+            # Assuming 'id' is retrieved from the URL kwargs
+            id = self.kwargs['id']
             return SavedRecipe.objects.get(id=id)
         except SavedRecipe.DoesNotExist:
             raise NotFound()
