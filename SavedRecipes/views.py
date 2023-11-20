@@ -42,11 +42,13 @@ class SavedRecipeView(generics.RetrieveUpdateDestroyAPIView):
         return get_object_or_404(SavedRecipe, user__username=username, pk=pk)
 
     def get(self, request, username, pk):
-        
-        saved_recipe = self.get_object()
-        self.check_object_permissions(request, saved_recipe)
+        saved_recipe = get_object_or_404(SavedRecipe, user__username=username, pk=pk)
         serializer = SavedRecipeSerializer(saved_recipe)
-        return Response(serializer.data)
+        data = {
+            'url': saved_recipe.recipe_url,  # Assuming 'recipe_url' is the field storing the URL
+            'user': username,
+        }
+        return Response(data)
 
     def put(self, request, username, pk):
         saved_recipe = self.get_object()
@@ -73,8 +75,8 @@ class UserListView(generics.RetrieveDestroyAPIView):
         return SavedRecipe.objects.filter(user__username=username)
 
     @permission_classes([IsAuthenticated])    
-    def delete(self, request, id):
-        saved_recipe = self.get_object(id)
+    def delete(self, request, pk):
+        saved_recipe = self.get_object(pk)
         self.check_object_permissions(request, saved_recipe)
         saved_recipe.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -82,8 +84,8 @@ class UserListView(generics.RetrieveDestroyAPIView):
     def get_object(self):
         try:
             # Assuming 'id' is retrieved from the URL kwargs
-            id = self.kwargs['id']
-            return SavedRecipe.objects.get(id=id)
+            pk = self.kwargs['pk']
+            return SavedRecipe.objects.get(pk=pk)
         except SavedRecipe.DoesNotExist:
             raise NotFound()
         
