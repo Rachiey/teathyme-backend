@@ -16,8 +16,6 @@ class ShoppingListItemViewSet(viewsets.ModelViewSet):
     queryset = ShoppingListItem.objects.all()
     serializer_class = ShoppingListItemSerializer
 
-
-
 class UserListView(generics.ListCreateAPIView):
     serializer_class = ShoppingListItemSerializer
 
