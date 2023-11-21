@@ -6,8 +6,11 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['username']
+# class SavedRecipeSerializer(serializers.ModelSerializer):
+#     user = serializers.CharField(source='user.username', read_only=True)
 class SavedRecipeSerializer(serializers.ModelSerializer):
-    user = serializers.CharField(source='user.username', read_only=True)
-    class Meta:
+   user = serializers.CharField(source='user.username', read_only=True)
+   url = serializers.CharField()  # Or use URLField if you want URL validation
+   class Meta:
         model = SavedRecipe
-        fields = ['id', 'url', 'user']  # Adjust fields as needed
+        fields = ['id', 'url', 'user'] 

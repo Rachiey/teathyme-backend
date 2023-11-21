@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 class SavedRecipe(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    recipe_url = models.URLField()
+    url = models.URLField()
 
     # Other fields related to recipes
 

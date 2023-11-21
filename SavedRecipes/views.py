@@ -16,43 +16,47 @@ from rest_framework.exceptions import NotFound
 
 
 
-class SavedRecipeView(generics.RetrieveUpdateDestroyAPIView):
+class SavedRecipeView(APIView):
     serializer_class = SavedRecipeSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]  # Use permission_classes as a class attribute
 
     def get_queryset(self):
         username = self.kwargs['username']
         return SavedRecipe.objects.filter(user__username=username)
 
-    def get_object(self):
+    def perform_create(self, serializer):
         username = self.kwargs['username']
-        pk = self.kwargs['pk']
-        return get_object_or_404(SavedRecipe, user__username=username, pk=pk)
+        user = User.objects.get(username=username)
+        serializer.save(user=user)
 
-    def get(self, request, username, pk):
-        saved_recipe = get_object_or_404(SavedRecipe, user__username=username, pk=pk)
-        serializer = SavedRecipeSerializer(saved_recipe)
-        data = {
-            'url': saved_recipe.recipe_url,  # Assuming 'recipe_url' is the field storing the URL
-            'user': username,
-        }
-        return Response(data)
-
-    def put(self, request, username, pk):
-        saved_recipe = self.get_object()
-        self.check_object_permissions(request, saved_recipe)
-        serializer = SavedRecipeSerializer(saved_recipe, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, username, pk):
-        saved_recipe = self.get_object()
-        self.check_object_permissions(request, saved_recipe)
-        saved_recipe.delete()
+    def delete(self, request, id):
+        savedrecipe = self.saved_recipe(id)
+        self.check_object_permissions(request, savedrecipe)
+        savedrecipe.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
         
+    def get(self, request, username):
+        queryset = SavedRecipe.objects.filter(user__username=username)
+        serialized_data = []
+        for recipe in queryset:
+            serialized_data.append({
+                'id': recipe.id,
+                'url': recipe.url,  # Assuming 'url' is a string field in your SavedRecipe model
+                'user': recipe.user.username  # Access the username from the related User model
+            })
+        return Response(serialized_data)
+    
+    def post(self, request, username):
+        # Get the authenticated user
+        user = request.user
+        
+        # Assuming you pass the 'username' in the URL to associate the SavedRecipe with the user
+        serializer = self.serializer_class(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            # Assign the authenticated user to the SavedRecipe instance before saving
+            serializer.save(user=user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UserListDetailView(APIView):
     def get_user(self, username):
