@@ -38,9 +38,14 @@ class LoginSerializer(serializers.Serializer):
 
         return attrs
 
+from django.contrib.auth.models import User
+from rest_framework import serializers
+from django.utils.text import capfirst
+
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
     password2 = serializers.CharField(write_only=True, required=True)
+    username = serializers.CharField(required=True)
 
     class Meta:
         model = User
@@ -58,12 +63,42 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         username = validated_data['username']
         password = validated_data['password']
-        
-        user = User.objects.create(username=username)
+
+        # Capitalize the username before creating the user
+        capitalized_username = capfirst(username)
+
+        user = User.objects.create(username=capitalized_username)
         user.set_password(password)
         user.save()
 
         return user
+
+# class RegisterSerializer(serializers.ModelSerializer):
+#     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+#     password2 = serializers.CharField(write_only=True, required=True)
+
+#     class Meta:
+#         model = User
+#         fields = ('username', 'password', 'password2',)
+    
+#     def validate(self, data):
+#         password1 = data.get('password')
+#         password2 = data.get('password2')
+
+#         if password1 != password2:
+#             raise serializers.ValidationError("Passwords do not match.")
+
+#         return data
+
+#     def create(self, validated_data):
+#         username = validated_data['username']
+#         password = validated_data['password']
+        
+#         user = User.objects.create(username=username)
+#         user.set_password(password)
+#         user.save()
+
+#         return user
     
 
 class UserSerializer(serializers.ModelSerializer):
